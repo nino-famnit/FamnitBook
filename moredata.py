@@ -14,15 +14,22 @@ def get_picture(s):
     m = re.search(img_pattern, r.text)
     url_picture = m.group(0)
     picture_name = m.group(1)
+    if picture_name == 'silhueta.png':
+        return None
     r = requests.get(url_picture)
     with open('pictures/{0}'.format(picture_name), 'wb') as fd:
         for chunk in r.iter_content(chunk_size=128):
             fd.write(chunk)
+    return picture_name
 
 with open('staff.csv') as f:
-    for person in f:
-        info = person.split(';')
-        url = info[3]
-        print('Downloading {0} {1} ...'.format(info[0], info[1]))
-        get_picture(url)
+    with open('data.csv', 'w') as g:
+        for person in f:
+            info = person.split(';')
+            url = info[3]
+            print('Downloading {0} {1} ...'.format(info[0], info[1]))
+            picture_name = get_picture(url)
+            if picture_name is not None:
+                print('{0};{1};{2}'.format(info[0], info[1], picture_name), file=g)
+
 
