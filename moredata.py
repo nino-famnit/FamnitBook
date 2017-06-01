@@ -34,6 +34,22 @@ with open('staff.csv') as f:
                 print('{0};{1};{2}'.format(info[0], info[1], picture_name), file=g)
 """
 
+def extract_data(class_, text):
+    pattern = r"<td class='{0}' itemprop=\".*?\">(.*?)</td>".format(class_)
+    m = re.search(pattern, text, flags=re.DOTALL)
+    return m.group(1)
+    
+def extract_div(text):
+    pattern = r"<div class='field'>(.*?)</div>"
+    return re.findall(pattern, text, flags=re.DOTALL)
+    
+def extract_slo_eng(text):
+    pattern_slo = r'^(.*?)<br>'
+    m = re.search(pattern_slo, text, flags=re.DOTALL)
+    pattern_eng = r"<span style='color:gray'>(.*?)</span>"
+    m2 = re.search(pattern_eng, text, flags=re.DOTALL)
+    return m.group(1).strip(), m2.group(1).strip()
+
 def get_more_data(s):
     url = 'https://www.famnit.upr.si' + s
     r = requests.get(url)
@@ -44,23 +60,15 @@ def get_more_data(s):
     m = re.search(title_pattern, r.text)
     title_slo = m.group(1).strip()
     title_eng = m.group(2).strip()
-    return {'full_name': full_name, 'title_eng': title_eng, 'title_slo': title_slo} 
+    office_pattern = r"<td class='kabinet' itemprop=\"address\">(.*?)</td>"
+    m = re.search(office_pattern, r.text)
+    office = m.group(1).strip()
+    return {'full_name': full_name, 'title_eng': title_eng, 'title_slo': title_slo, 'office': office,
+        'departments': [extract_slo_eng(x) for x in extract_div(extract_data('departments', r.text))],
+        'research': [extract_slo_eng(x) for x in extract_div(extract_data('research', r.text))],
+        'subjects': [extract_slo_eng(x) for x in extract_div(extract_data('subjects', r.text))]
+    } 
 
 print(get_more_data('/en/about-faculty/staff/vito.vitrih/'))    
 
-"""
-<td class='kabinet' itemprop="address">II/14 (Kettejeva 1, Koper)</td>
-	
-<td class='departments' itemprop="affiliation">
-<div class='field'>Oddelek za matematiko<br><span style='display: none;'> / </span>
-<span style='color:gray'>Department of Mathematics</span><br></div></td>
-	</tr>
-	
-<td class='research' itemprop="role">
-<div class='field'>Numerična matematika <br><span style='color:gray'> Numerical Mathematics</span><br></div><div class='field'>Polinomska interpolacija v več dimenzijah <br><span style='color:gray'> Multivariate Polynomial Interpolation</span><br></div><div class='field'>Računalniško podprto geometrijsko načrtovanje (CAGD) <br><span style='color:gray'> Computer Aided Geometric Design (CAGD)</span><br></div><div class='field'>Geometrijska interpolacija krivulj in ploskev <br><span style='color:gray'> Geometric Interpolation of Curves and Surfaces</span><br></div><div class='field'>Večdimenzionalna numerična integracija <br><span style='color:gray'> Multidimensional Numerical Integration</span><br></div><div class='field'>Zlepki <br><span style='color:gray'> Splines</span><br></div></td>
 
-<td class='subjects' itemprop="role">
-<div class='field'>Izbrana poglavja iz numeričnih metod<br><span style='display: none;'> / </span>
-<span style='color:gray'>Selected Topics in Numerical Mathematics</span><br></div>
-<span style='display: none;'>, </span>		</td>
-"""
