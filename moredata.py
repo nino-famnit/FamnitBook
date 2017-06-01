@@ -57,9 +57,14 @@ def get_more_data(s):
     m = re.search(full_name_pattern, r.text)
     full_name = m.group(1).strip()
     title_pattern = r"<h2 style='.*?' class='pedagoska'  itemprop=\"title\">\s*(.*?) / <span style='.*?'>(.*?)</span>\s*</h2>"
-    m = re.search(title_pattern, r.text)
-    title_slo = m.group(1).strip()
-    title_eng = m.group(2).strip()
+    title_slo = None
+    title_eng = None
+    try:
+        m = re.search(title_pattern, r.text)
+        title_slo = m.group(1).strip()
+        title_eng = m.group(2).strip()
+    except AttributeError:
+        pass
     office_pattern = r"<td class='kabinet' itemprop=\"address\">(.*?)</td>"
     m = re.search(office_pattern, r.text)
     office = m.group(1).strip()
@@ -69,6 +74,23 @@ def get_more_data(s):
         'subjects': [extract_slo_eng(x) for x in extract_div(extract_data('subjects', r.text))]
     } 
 
-print(get_more_data('/en/about-faculty/staff/vito.vitrih/'))    
+def get_more_data_ignore_office_people(s):
+    try:
+        ret = get_more_data(s)
+        return ret
+    except AttributeError:
+        # print(s)
+        return None
+
+with open('staff.csv') as f:
+    for person in f:
+        info = person.split(';')
+        url = info[3]
+        print('Downloading {0} {1} ...'.format(info[0], info[1]))
+        print(get_more_data_ignore_office_people(url))    
+
+
+
+
 
 
