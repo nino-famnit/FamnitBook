@@ -1,23 +1,33 @@
+DROP TABLE department;
+DROP TABLE subject;
+DROP TABLE researchfield;
+DROP TABLE professor;
+
+CREATE SEQUENCE department_id START 1;
+CREATE SEQUENCE subject_id START 1;
+CREATE SEQUENCE researchfield_id START 1;
+CREATE SEQUENCE professor_id START 1;
+
 CREATE TABLE department (
-    id          integer PRIMARY KEY,
+    id          integer PRIMARY KEY DEFAULT nextval('department_id'),
     name        varchar(200),
     eng_name    varchar(200)
 );
 
 CREATE TABLE subject (
-    id          integer PRIMARY KEY,
+    id          integer PRIMARY KEY DEFAULT nextval('subject_id'),
     name        varchar(200),
     eng_name    varchar(200)
 );
 
 CREATE TABLE researchfield (
-    id          integer PRIMARY KEY,
+    id          integer PRIMARY KEY DEFAULT nextval('researchfield_id'),
     name        varchar(200),
     eng_name    varchar(200)
 );
 
 CREATE TABLE professor (
-    id          integer PRIMARY KEY,
+    id          integer PRIMARY KEY DEFAULT nextval('professor_id'),
     name        varchar(40),
     surname     varchar(40),
     title       varchar(40),
