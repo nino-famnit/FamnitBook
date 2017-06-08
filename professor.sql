@@ -1,3 +1,8 @@
+DROP TABLE phone;
+DROP TABLE doesresearch;
+DROP TABLE teaching;
+DROP TABLE deptmember;
+
 DROP TABLE department;
 DROP TABLE subject;
 DROP TABLE researchfield;

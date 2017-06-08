@@ -10,8 +10,8 @@ password = 'burek'
 conn = psycopg2.connect("dbname='{0}' user='{1}' host='{2}' password='{3}'".format(
     dbname, user, host, password))
 
-query = """INSERT INTO professor (id, name, surname, email, homepage, url)
-    VALUES ({0}, '{1}', '{2}', '{3}', '{4}', '{5}')"""
+query = """INSERT INTO professor (name, surname, email, homepage, url)
+    VALUES ('{1}', '{2}', '{3}', '{4}', '{5}')"""
 
 cur = conn.cursor()
 
